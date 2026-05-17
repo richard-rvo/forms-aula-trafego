@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S-LAB — Avaliação Pós-Aula · IA na Prática</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-display: "SF Pro Display",-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+      --font-text:    "SF Pro Text",-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+      --font-mono:    "SF Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+      --primary:        #F08113;
+      --primary-light:  #F8A23B;
+      --primary-dark:   #E94D1D;
+      --primary-dim:    rgba(240,129,19,0.10);
+      --primary-glow:   rgba(240,129,19,0.22);
+      --gradient:       linear-gradient(135deg, #F8A23B 0%, #F08113 60%, #E94D1D 100%);
+
+      --bg:             #FFF4E8;
+      --surface:        #FAF7F2;
+      --card:           #FAF7F2;
+      --border:         #EDE0CF;
+      --border-hover:   #F08113;
+
+      --text:           #1A1614;
+      --text-mid:       #3D3530;
+      --muted:          #87807A;
+      --error:          #E94D1D;
+      --nav-bg:         #1A1614;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(240,129,19,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,129,19,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(248,162,59,0.10); top: -120px; right: -150px; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(233,77,29,0.06); bottom: -100px; left: -100px; }
+    .orb-3 { width: 280px; height: 280px; background: rgba(240,129,19,0.07); top: 50%; left: 40%; }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 24px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-logo-img {
+      height: 32px;
+      width: auto;
+      display: block;
+    }
+    .nav-logo-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.15);
+    }
+    .nav-logo-label {
+      font-family: var(--font-text);
+      font-weight: 300;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.06em;
+    }
+    .nav-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 100px;
+      background: rgba(240,129,19,0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(240,129,19,0.30);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Layout */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    /* Header */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-dim);
+      border: 1px solid rgba(240,129,19,0.28);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--primary);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(30px, 5.5vw, 48px);
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    h1 strong {
+      font-weight: 700;
+    }
+    .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 44px;
+      line-height: 1.8;
+      background: var(--surface);
+      border-left: 3px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+    }
+    .subtitle em { font-style: italic; color: var(--text-mid); }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 36px;
+    }
+
+    /* Progress */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: color .3s;
+    }
+    .progress-step.active { color: var(--primary); }
+    .progress-step.done   { color: var(--primary); }
+    .step-num {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      transition: all .3s;
+    }
+    .progress-step.active .step-num,
+    .progress-step.done .step-num {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .progress-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      transition: background .5s;
+    }
+    .progress-line.filled { background: var(--primary); }
+
+    /* Step Card */
+    .step-card {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 1px 4px rgba(26,22,20,0.05), 0 6px 20px rgba(26,22,20,0.04);
+      animation: fadeUp .4s ease;
+    }
+    .step-card.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .step-title {
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.65;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 22px;
+    }
+
+    /* Fields */
+    .field { margin-bottom: 22px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .field label span { color: var(--error); margin-left: 2px; }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: var(--font-text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+    input::placeholder, textarea::placeholder { color: #b5a99f; }
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2387807A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    textarea { resize: vertical; min-height: 110px; line-height: 1.65; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    input.error, select.error, textarea.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(233,77,29,0.12);
+    }
+    .field-error { font-size: 12px; color: var(--error); margin-top: 5px; display: none; }
+    .field-error.show { display: block; }
+
+    /* Feeling chips (emoji — grandes) */
+    .feeling-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .feeling-chip input { display: none; }
+    .feeling-chip label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all .18s;
+      line-height: 1.45;
+    }
+    .feeling-chip label .emoji { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .feeling-chip input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      color: var(--text);
+      font-weight: 600;
+    }
+    .feeling-chip label:hover {
+      border-color: var(--primary-light);
+      background: rgba(248,162,59,0.06);
+    }
+
+    /* Radio chips (small) */
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip input { display: none; }
+    .chip label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .18s;
+      margin: 0;
+    }
+    .chip input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+    .chip label:hover { border-color: var(--primary-light); color: var(--text-mid); background: rgba(248,162,59,0.06); }
+
+    /* NPS Scale */
+    .nps-wrap { margin-top: 4px; }
+    .nps-items {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .nps-item input { display: none; }
+    .nps-item label {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .18s;
+      margin: 0;
+    }
+    .nps-item input:checked + label {
+      background: var(--gradient);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 12px var(--primary-glow);
+    }
+    .nps-item label:hover { border-color: var(--primary); color: var(--primary-dark); }
+    .nps-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 24px;
+      border-radius: 8px;
+      font-family: var(--font-text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all .18s;
+    }
+    .btn-primary {
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 18px var(--primary-glow); }
+    .btn-primary:active { transform: translateY(0); filter: brightness(1); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: #c4b4a5; color: var(--text-mid); background: var(--surface); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; filter: none !important; }
+    .btn-icon { font-size: 16px; }
+
+    /* Success */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 56px 36px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 1px 4px rgba(26,22,20,0.05), 0 8px 28px rgba(26,22,20,0.04);
+      animation: fadeUp .45s ease;
+    }
+    .success-screen.show { display: block; }
+    .success-icon {
+      width: 76px; height: 76px;
+      background: var(--primary-dim);
+      border: 2px solid rgba(240,129,19,0.30);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 24px;
+    }
+    .success-screen h2 {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .success-screen p { color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .success-screen strong { color: var(--primary); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #b5a99f;
+      letter-spacing: 0.04em;
+    }
+
+    /* Responsive */
+    @media (max-width: 540px) {
+      .page { padding: 36px 16px 80px; }
+      .step-card { padding: 22px 16px; }
+      h1 { font-size: 28px; }
+      .btn-row { flex-direction: column-reverse; }
+      .btn { width: 100%; justify-content: center; }
+      .navbar { padding: 0 16px; }
+      .nps-items { gap: 4px; }
+      .nps-item label { width: 42px; height: 42px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="images/logo.svg" alt="S-LAB" class="nav-logo-img" />
+      <div class="nav-logo-sep"></div>
+      <span class="nav-logo-label">IA na Prática</span>
+    </div>
+    <span class="nav-tag">Pós-Aula</span>
+  </nav>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="page">
+
+    <!-- Header -->
+    <div>
+      <div class="badge"><span class="badge-dot"></span>Avaliação Pós-Aula</div>
+      <h1><strong class="gradient-text">IA na Prática</strong><br>Como foi pra você?</h1>
+      <p class="subtitle">
+        <em>Leva menos de 3 minutos. Sua resposta é o que nos ajuda a melhorar e entregar cada vez mais valor.</em>
+      </p>
+      <div class="divider"></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-step active" id="ps1"><div class="step-num">1</div><span>Sentimento</span></div>
+      <div class="progress-line" id="pl1"></div>
+      <div class="progress-step" id="ps2"><div class="step-num">2</div><span>Conteúdo</span></div>
+      <div class="progress-line" id="pl2"></div>
+      <div class="progress-step" id="ps3"><div class="step-num">3</div><span>Feedback</span></div>
+      <div class="progress-line" id="pl3"></div>
+      <div class="progress-step" id="ps4"><div class="step-num">4</div><span>NPS</span></div>
+    </div>
+
+    <!-- STEP 1: Sentimento -->
+    <div class="step-card active" id="step1">
+      <div class="step-label">Pergunta 1 de 5</div>
+      <div class="step-title">Após a aula, qual sentimento ficou?</div>
+      <div class="step-desc">Pode ser honesto. Toda resposta nos ajuda a melhorar.</div>
+
+      <div class="field">
+        <div class="feeling-group">
+          <div class="feeling-chip">
+            <input type="radio" name="sentimento" id="s1" value="Saí com a cabeça explodindo de ideias — tem muito mais possível do que eu imaginava" />
+            <label for="s1"><span class="emoji">🤯</span> Saí com a cabeça explodindo de ideias. Tem muito mais possibilidades do que eu imaginava</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="sentimento" id="s2" value="Animado e pronto para testar — já sei por onde começar" />
+            <label for="s2"><span class="emoji">🔥</span> Animado e pronto para testar. Já sei por onde começar</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="sentimento" id="s3" value="Interessante, mas ainda não sei como aplicar no meu caso" />
+            <label for="s3"><span class="emoji">😐</span> Interessante, mas ainda não sei como aplicar no meu caso</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="sentimento" id="s4" value="Foi muita informação de uma vez — preciso revisitar o conteúdo" />
+            <label for="s4"><span class="emoji">😵</span> Foi muita informação de uma vez, preciso revisitar o conteúdo</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="sentimento" id="s5" value="Não era o que eu esperava" />
+            <label for="s5"><span class="emoji">😕</span> Não era o que eu esperava</label>
+          </div>
+        </div>
+        <div class="field-error" id="e-sentimento">Selecione como você se sentiu após a aula.</div>
+      </div>
+
+      <div class="btn-row">
+        <span></span>
+        <button class="btn btn-primary" onclick="goTo(2)">Continuar <span class="btn-icon">→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Conteúdo mais valioso -->
+    <div class="step-card" id="step2">
+      <div class="step-label">Pergunta 2 de 5</div>
+      <div class="step-title">Qual parte da aula foi mais valiosa para você?</div>
+      <div class="step-desc">Qual parte da aula gerou maior impacto e você mais gostou?</div>
+
+      <div class="field">
+        <div class="chip-group" id="parte-valiosa-group">
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p1" value="Framework P·C·T·F·R" /><label for="p1">Framework P·C·T·F·R</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p2" value="Identidade Visual" /><label for="p2">Identidade Visual</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p3" value="Copy e Redes Sociais" /><label for="p3">Copy e Redes Sociais</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p4" value="Calendário de Conteúdo" /><label for="p4">Calendário de Conteúdo</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p5" value="Imagens e Carrosseis" /><label for="p5">Imagens e Carrosseis</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p6" value="Slides e Apresentações" /><label for="p6">Slides e Apresentações</label></div>
+          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p7" value="NotebookLM" /><label for="p7">NotebookLM</label></div>
+        </div>
+        <div class="field-error" id="e-parte_valiosa">Selecione uma ou várias opções.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goTo(1)"><span class="btn-icon">←</span> Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Continuar <span class="btn-icon">→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Feedback aberto -->
+    <div class="step-card" id="step3">
+      <div class="step-label">Perguntas 3 e 4 de 5</div>
+      <div class="step-title">Sua visão honesta</div>
+      <div class="step-desc">Essas respostas são o coração do nosso processo de melhoria.</div>
+
+      <div class="field">
+        <label>O que você mudaria ou sente que faltou em nossa aula? <span>*</span></label>
+        <textarea id="mudaria" placeholder="Pode ser direto: ritmo da aula, profundidade, exemplos, o que faltou abordar..."></textarea>
+        <div class="field-error" id="e-mudaria">Compartilhe o que você mudaria ou o que faltou.</div>
+      </div>
+
+      <div class="field">
+        <label>O que você vai testar primeiro após a aula? <span>*</span></label>
+        <textarea id="testar" placeholder="Ex: vou criar meu calendário de conteúdo, vou montar minha identidade visual com IA, vou testar o NotebookLM..."></textarea>
+        <div class="field-error" id="e-testar">Conta o que você vai testar primeiro.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goTo(2)"><span class="btn-icon">←</span> Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Continuar <span class="btn-icon">→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: NPS -->
+    <div class="step-card" id="step4">
+      <div class="step-label">Pergunta 5 de 5</div>
+      <div class="step-title">De 1 a 10, qual a chance de você indicar essa aula para alguém?</div>
+      <div class="step-desc">1 = definitivamente não indicaria · 10 = indicaria sem hesitar.</div>
+
+      <div class="field">
+        <div class="nps-wrap">
+          <div class="nps-items">
+            <div class="nps-item"><input type="radio" name="nps" id="nps1" value="1"><label for="nps1">1</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps2" value="2"><label for="nps2">2</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps3" value="3"><label for="nps3">3</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps4" value="4"><label for="nps4">4</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps5" value="5"><label for="nps5">5</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps6" value="6"><label for="nps6">6</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps7" value="7"><label for="nps7">7</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps8" value="8"><label for="nps8">8</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps9" value="9"><label for="nps9">9</label></div>
+            <div class="nps-item"><input type="radio" name="nps" id="nps10" value="10"><label for="nps10">10</label></div>
+          </div>
+          <div class="nps-labels">
+            <span>Não indicaria</span>
+            <span>Indicaria com certeza</span>
+          </div>
+        </div>
+        <div class="field-error" id="e-nps">Selecione uma nota de 1 a 10.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goTo(3)"><span class="btn-icon">←</span> Voltar</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">
+          Enviar avaliação <span class="btn-icon">✦</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">🙏</div>
+      <h2>Obrigado pelo seu feedback!</h2>
+      <p>
+        <strong>Sua resposta chegou.</strong> Cada avaliação é lida com atenção e usada diretamente para melhorar o próximo conteúdo.<br><br>
+        Acompanhe os próximos materiais e aulas pelo <strong>grupo do WhatsApp</strong>. Tem muito mais vindo por aí.
+      </p>
+    </div>
+
+    <div class="footer">
+      S-LAB — Laboratório de Desenvolvimento Profissional em Saúde ✦ IA na Prática
+    </div>
+
+  </div>
+
+  <script>
+    // ── Config ──────────────────────────────────────────────────────────────
+    // Após publicar o novo Apps Script, cole a URL do Web App aqui:
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdJTsZOX3yRpbrkY6iFu_StyHckq48yJrg1M1PJSqCo3jUUuwF4Fg2VZzh_MCaNbiJ/exec';
+    // ────────────────────────────────────────────────────────────────────────
+
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function updateProgress(step) {
+      for (let i = 1; i <= totalSteps; i++) {
+        const ps = document.getElementById('ps' + i);
+        ps.classList.remove('active', 'done');
+        if (i < step)  ps.classList.add('done');
+        if (i === step) ps.classList.add('active');
+      }
+      for (let i = 1; i < totalSteps; i++) {
+        const pl = document.getElementById('pl' + i);
+        pl.classList.toggle('filled', i < step);
+      }
+    }
+
+    function showStep(n) {
+      document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById('step' + n);
+      if (card) {
+        card.classList.add('active');
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      updateProgress(n);
+      currentStep = n;
+    }
+
+    function val(id, check) {
+      const el  = document.getElementById(id);
+      const err = document.getElementById('e-' + id);
+      const ok  = check(el);
+      el.classList.toggle('error', !ok);
+      if (err) err.classList.toggle('show', !ok);
+      return ok;
+    }
+
+    function radioSelected(name) {
+      return !!document.querySelector(`input[name="${name}"]:checked`);
+    }
+
+    function valRadio(name) {
+      const err = document.getElementById('e-' + name);
+      const ok  = radioSelected(name);
+      if (err) err.classList.toggle('show', !ok);
+      return ok;
+    }
+
+    function getChecked(name) {
+      return [...document.querySelectorAll(`input[name="${name}"]:checked`)]
+        .map(el => el.value);
+    }
+
+    const notEmpty = el => el.value.trim().length > 0;
+
+    function validateStep(n) {
+      if (n === 1) return valRadio('sentimento');
+      if (n === 2) {
+        const err = document.getElementById('e-parte_valiosa');
+        const ok  = getChecked('parte_valiosa').length > 0;
+        if (err) err.classList.toggle('show', !ok);
+        return ok;
+      }
+      if (n === 3) {
+        const a = val('mudaria', notEmpty);
+        const b = val('testar',  notEmpty);
+        return a && b;
+      }
+      if (n === 4) return valRadio('nps');
+      return true;
+    }
+
+    function goTo(n) {
+      if (n > currentStep && !validateStep(currentStep)) return;
+      showStep(n);
+    }
+
+    async function submitForm() {
+      if (!validateStep(4)) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      const getRadio = name => {
+        const el = document.querySelector(`input[name="${name}"]:checked`);
+        return el ? el.value : '';
+      };
+
+      const payload = {
+        timestamp:     new Date().toLocaleString('pt-BR'),
+        sentimento:    getRadio('sentimento'),
+        parte_valiosa: getChecked('parte_valiosa').join(', '),
+        mudaria:       document.getElementById('mudaria').value.trim(),
+        testar:        document.getElementById('testar').value.trim(),
+        nps:           getRadio('nps'),
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode:   'no-cors',
+          body:   new URLSearchParams(payload),
+        });
+        document.getElementById('progressWrap').style.display = 'none';
+        document.querySelectorAll('.step-card').forEach(c => c.style.display = 'none');
+        document.getElementById('successScreen').classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = 'Enviar avaliação <span class="btn-icon">✦</span>';
+        alert('Ops! Algo deu errado. Tente novamente.');
+      }
+    }
+  </script>
+</body>
+</html>
