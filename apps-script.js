@@ -1,5 +1,5 @@
 // ============================================================
-// Google Apps Script — S-LAB · IA na Prática · NPS Pós-Aula
+// Google Apps Script — S-LAB · Tráfego Pago para Captação e Vendas
 //
 // Como usar:
 //   1. Abra a planilha Google Sheets que vai receber as respostas
@@ -13,7 +13,7 @@
 // ============================================================
 
 // ── ⚙️  CONFIGURAÇÃO — ajuste aqui se necessário ──────────────
-const SHEET_NAME = 'NPS'; // nome da aba no Sheets
+const SHEET_NAME = 'Inscrições'; // nome da aba no Sheets
 // ─────────────────────────────────────────────────────────────
 
 function doPost(e) {
@@ -23,11 +23,24 @@ function doPost(e) {
 
     sheet.appendRow([
       data.timestamp,
-      data.sentimento,
-      data.parte_valiosa,
-      data.mudaria,
-      data.testar,
-      data.nps,
+      data.nome,
+      data.whatsapp,
+      data.email,
+      data.idade,
+      data.sexo,
+      data.profissao,
+      data.vende,
+      data.produto,
+      data.cliente,
+      data.preco,
+      data.perfil,
+      data.seguidores,
+      data.frequencia,
+      data.anuncios,
+      data.gestao,
+      data.desafio,
+      data.impede,
+      data.expectativa,
     ]);
 
     return response({ success: true });
@@ -37,7 +50,7 @@ function doPost(e) {
 }
 
 function doGet() {
-  return response({ status: 'Apps Script NPS ativo ✓', projeto: 'S-LAB — IA na Prática' });
+  return response({ status: 'Apps Script ativo ✓', projeto: 'S-LAB — Tráfego Pago para Captação e Vendas' });
 }
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -49,29 +62,41 @@ function getOrCreateSheet() {
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
 
-    sheet.appendRow([
+    const headers = [
       'Data/Hora',
-      'Sentimento pós-aula',
-      'Parte mais valiosa',
-      'O que mudaria / faltou',
-      'O que vai testar primeiro',
-      'NPS (0–10)',
-    ]);
+      'Nome completo',
+      'WhatsApp',
+      'E-mail',
+      'Idade',
+      'Sexo',
+      'Profissão / Área de atuação',
+      'Situação de vendas',
+      'O que vende / pretende vender',
+      'Cliente ideal',
+      'Faixa de preço',
+      'Perfil no Instagram',
+      'Seguidores',
+      'Frequência de posts',
+      'Histórico com anúncios',
+      'Gestão do tráfego',
+      'Maiores desafios no Instagram',
+      'O que impede de crescer',
+      'Expectativa com a aula',
+    ];
+
+    sheet.appendRow(headers);
 
     // Formata cabeçalho com identidade S-LAB
-    const header = sheet.getRange(1, 1, 1, 6);
-    header.setBackground('#F08113');   // laranja principal S-LAB
+    const numCols = headers.length;
+    const header  = sheet.getRange(1, 1, 1, numCols);
+    header.setBackground('#F08113');
     header.setFontColor('#FFFFFF');
     header.setFontWeight('bold');
     sheet.setFrozenRows(1);
 
     // Larguras das colunas
-    sheet.setColumnWidth(1, 150);  // Data/Hora
-    sheet.setColumnWidth(2, 280);  // Sentimento
-    sheet.setColumnWidth(3, 200);  // Parte valiosa
-    sheet.setColumnWidth(4, 340);  // O que mudaria
-    sheet.setColumnWidth(5, 340);  // O que vai testar
-    sheet.setColumnWidth(6, 80);   // NPS
+    const widths = [150, 200, 130, 220, 100, 100, 220, 240, 340, 340, 130, 200, 130, 180, 260, 200, 260, 340, 340];
+    widths.forEach((w, i) => sheet.setColumnWidth(i + 1, w));
   }
 
   return sheet;

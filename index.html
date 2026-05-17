@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>S-LAB — Avaliação Pós-Aula · IA na Prática</title>
+  <title>S-LAB — Aula · Tráfego Pago para Captação e Vendas</title>
   <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -284,6 +284,7 @@
 
     input[type="text"],
     input[type="email"],
+    input[type="tel"],
     select,
     textarea {
       width: 100%;
@@ -319,7 +320,7 @@
     .field-error { font-size: 12px; color: var(--error); margin-top: 5px; display: none; }
     .field-error.show { display: block; }
 
-    /* Feeling chips (emoji — grandes) */
+    /* Feeling chips (large — radio) */
     .feeling-group {
       display: flex;
       flex-direction: column;
@@ -341,7 +342,7 @@
       transition: all .18s;
       line-height: 1.45;
     }
-    .feeling-chip label .emoji { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .feeling-chip label .emoji { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
     .feeling-chip input:checked + label {
       border-color: var(--primary);
       background: var(--primary-dim);
@@ -383,42 +384,21 @@
     }
     .chip label:hover { border-color: var(--primary-light); color: var(--text-mid); background: rgba(248,162,59,0.06); }
 
-    /* NPS Scale */
-    .nps-wrap { margin-top: 4px; }
-    .nps-items {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .nps-item input { display: none; }
-    .nps-item label {
-      width: 48px; height: 48px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
+    /* Conditional sub-field */
+    .conditional-field {
+      display: none;
+      margin-top: 14px;
+      padding: 16px;
       background: var(--bg);
-      font-size: 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .conditional-field.show { display: block; }
+    .conditional-field .field-label {
+      font-size: 13px;
       font-weight: 700;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .18s;
-      margin: 0;
-    }
-    .nps-item input:checked + label {
-      background: var(--gradient);
-      border-color: transparent;
-      color: #fff;
-      box-shadow: 0 2px 12px var(--primary-glow);
-    }
-    .nps-item label:hover { border-color: var(--primary); color: var(--primary-dark); }
-    .nps-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      color: var(--text-mid);
+      margin-bottom: 10px;
     }
 
     /* Buttons */
@@ -508,8 +488,6 @@
       .btn-row { flex-direction: column-reverse; }
       .btn { width: 100%; justify-content: center; }
       .navbar { padding: 0 16px; }
-      .nps-items { gap: 4px; }
-      .nps-item label { width: 42px; height: 42px; font-size: 13px; }
     }
   </style>
 </head>
@@ -519,9 +497,9 @@
     <div class="nav-logo">
       <img src="images/logo.svg" alt="S-LAB" class="nav-logo-img" />
       <div class="nav-logo-sep"></div>
-      <span class="nav-logo-label">IA na Prática</span>
+      <span class="nav-logo-label">Tráfego Pago para Captação e Vendas</span>
     </div>
-    <span class="nav-tag">Pós-Aula</span>
+    <span class="nav-tag">Inscrição</span>
   </nav>
 
   <div class="orb orb-1"></div>
@@ -532,55 +510,75 @@
 
     <!-- Header -->
     <div>
-      <div class="badge"><span class="badge-dot"></span>Avaliação Pós-Aula</div>
-      <h1><strong class="gradient-text">IA na Prática</strong><br>Como foi pra você?</h1>
+      <div class="badge"><span class="badge-dot"></span>Aula 02 · Tráfego Pago no Instagram</div>
+      <h1><strong class="gradient-text">Tráfego Pago</strong><br>para Captação e Vendas</h1>
       <p class="subtitle">
-        <em>Leva menos de 3 minutos. Sua resposta é o que nos ajuda a melhorar e entregar cada vez mais valor.</em>
+        <em>Preencha com atenção — leva 4 minutos e nos ajuda a preparar uma aula feita sob medida para o seu momento.</em>
       </p>
       <div class="divider"></div>
     </div>
 
     <!-- Progress -->
     <div class="progress-wrap" id="progressWrap">
-      <div class="progress-step active" id="ps1"><div class="step-num">1</div><span>Sentimento</span></div>
+      <div class="progress-step active" id="ps1"><div class="step-num">1</div><span>Você</span></div>
       <div class="progress-line" id="pl1"></div>
-      <div class="progress-step" id="ps2"><div class="step-num">2</div><span>Conteúdo</span></div>
+      <div class="progress-step" id="ps2"><div class="step-num">2</div><span>Negócio</span></div>
       <div class="progress-line" id="pl2"></div>
-      <div class="progress-step" id="ps3"><div class="step-num">3</div><span>Feedback</span></div>
+      <div class="progress-step" id="ps3"><div class="step-num">3</div><span>Instagram</span></div>
       <div class="progress-line" id="pl3"></div>
-      <div class="progress-step" id="ps4"><div class="step-num">4</div><span>NPS</span></div>
+      <div class="progress-step" id="ps4"><div class="step-num">4</div><span>Expectativas</span></div>
     </div>
 
-    <!-- STEP 1: Sentimento -->
+    <!-- STEP 1: Quem é você -->
     <div class="step-card active" id="step1">
-      <div class="step-label">Pergunta 1 de 5</div>
-      <div class="step-title">Após a aula, qual sentimento ficou?</div>
-      <div class="step-desc">Pode ser honesto. Toda resposta nos ajuda a melhorar.</div>
+      <div class="step-label">Parte 1 de 4</div>
+      <div class="step-title">Quem é você</div>
+      <div class="step-desc">Informações básicas para entendermos com quem estamos falando.</div>
 
       <div class="field">
-        <div class="feeling-group">
-          <div class="feeling-chip">
-            <input type="radio" name="sentimento" id="s1" value="Saí com a cabeça explodindo de ideias — tem muito mais possível do que eu imaginava" />
-            <label for="s1"><span class="emoji">🤯</span> Saí com a cabeça explodindo de ideias. Tem muito mais possibilidades do que eu imaginava</label>
-          </div>
-          <div class="feeling-chip">
-            <input type="radio" name="sentimento" id="s2" value="Animado e pronto para testar — já sei por onde começar" />
-            <label for="s2"><span class="emoji">🔥</span> Animado e pronto para testar. Já sei por onde começar</label>
-          </div>
-          <div class="feeling-chip">
-            <input type="radio" name="sentimento" id="s3" value="Interessante, mas ainda não sei como aplicar no meu caso" />
-            <label for="s3"><span class="emoji">😐</span> Interessante, mas ainda não sei como aplicar no meu caso</label>
-          </div>
-          <div class="feeling-chip">
-            <input type="radio" name="sentimento" id="s4" value="Foi muita informação de uma vez — preciso revisitar o conteúdo" />
-            <label for="s4"><span class="emoji">😵</span> Foi muita informação de uma vez, preciso revisitar o conteúdo</label>
-          </div>
-          <div class="feeling-chip">
-            <input type="radio" name="sentimento" id="s5" value="Não era o que eu esperava" />
-            <label for="s5"><span class="emoji">😕</span> Não era o que eu esperava</label>
-          </div>
+        <label for="nome">Nome completo <span>*</span></label>
+        <input type="text" id="nome" placeholder="Seu nome completo" />
+        <div class="field-error" id="e-nome">Informe seu nome completo.</div>
+      </div>
+
+      <div class="field">
+        <label for="whatsapp">WhatsApp <span>*</span></label>
+        <input type="tel" id="whatsapp" placeholder="(00) 00000-0000" />
+        <div class="field-error" id="e-whatsapp">Informe seu WhatsApp.</div>
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail <span>*</span></label>
+        <input type="email" id="email" placeholder="seu@email.com" />
+        <div class="field-error" id="e-email">Informe um e-mail válido.</div>
+      </div>
+
+      <div class="field">
+        <label>Idade <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="idade" id="id1" value="Menos de 25 anos" /><label for="id1">Menos de 25 anos</label></div>
+          <div class="chip"><input type="radio" name="idade" id="id2" value="25 a 34 anos" /><label for="id2">25 a 34 anos</label></div>
+          <div class="chip"><input type="radio" name="idade" id="id3" value="35 a 44 anos" /><label for="id3">35 a 44 anos</label></div>
+          <div class="chip"><input type="radio" name="idade" id="id4" value="45 a 54 anos" /><label for="id4">45 a 54 anos</label></div>
+          <div class="chip"><input type="radio" name="idade" id="id5" value="55 anos ou mais" /><label for="id5">55 anos ou mais</label></div>
         </div>
-        <div class="field-error" id="e-sentimento">Selecione como você se sentiu após a aula.</div>
+        <div class="field-error" id="e-idade">Selecione sua faixa etária.</div>
+      </div>
+
+      <div class="field">
+        <label>Sexo <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="sexo" id="sx1" value="Feminino" /><label for="sx1">Feminino</label></div>
+          <div class="chip"><input type="radio" name="sexo" id="sx2" value="Masculino" /><label for="sx2">Masculino</label></div>
+          <div class="chip"><input type="radio" name="sexo" id="sx3" value="Prefiro não informar" /><label for="sx3">Prefiro não informar</label></div>
+        </div>
+        <div class="field-error" id="e-sexo">Selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label for="profissao">Qual é a sua profissão ou área de atuação? <span>*</span></label>
+        <input type="text" id="profissao" placeholder="Ex: fisioterapeuta, nutricionista, coach de saúde..." />
+        <div class="field-error" id="e-profissao">Informe sua profissão ou área de atuação.</div>
       </div>
 
       <div class="btn-row">
@@ -589,23 +587,57 @@
       </div>
     </div>
 
-    <!-- STEP 2: Conteúdo mais valioso -->
+    <!-- STEP 2: Seu negócio hoje -->
     <div class="step-card" id="step2">
-      <div class="step-label">Pergunta 2 de 5</div>
-      <div class="step-title">Qual parte da aula foi mais valiosa para você?</div>
-      <div class="step-desc">Qual parte da aula gerou maior impacto e você mais gostou?</div>
+      <div class="step-label">Parte 2 de 4</div>
+      <div class="step-title">Seu negócio hoje</div>
+      <div class="step-desc">Queremos entender onde você está e o que pretende vender.</div>
 
       <div class="field">
-        <div class="chip-group" id="parte-valiosa-group">
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p1" value="Framework P·C·T·F·R" /><label for="p1">Framework P·C·T·F·R</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p2" value="Identidade Visual" /><label for="p2">Identidade Visual</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p3" value="Copy e Redes Sociais" /><label for="p3">Copy e Redes Sociais</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p4" value="Calendário de Conteúdo" /><label for="p4">Calendário de Conteúdo</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p5" value="Imagens e Carrosseis" /><label for="p5">Imagens e Carrosseis</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p6" value="Slides e Apresentações" /><label for="p6">Slides e Apresentações</label></div>
-          <div class="chip"><input type="checkbox" name="parte_valiosa" id="p7" value="NotebookLM" /><label for="p7">NotebookLM</label></div>
+        <label>Você já vende algum produto ou serviço hoje? <span>*</span></label>
+        <div class="feeling-group">
+          <div class="feeling-chip">
+            <input type="radio" name="vende" id="v1" value="Sim, já vendo e tenho clientes" />
+            <label for="v1">Sim, já vendo e tenho clientes</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="vende" id="v2" value="Sim, porém vendo pouco ou quase nada" />
+            <label for="v2">Sim, porém vendo pouco ou quase nada</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="vende" id="v3" value="Ainda não vendo, estou começando" />
+            <label for="v3">Ainda não vendo, estou começando</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="vende" id="v4" value="Ainda não vendo, mas tenho produto/serviço definido" />
+            <label for="v4">Ainda não vendo, mas tenho produto/serviço definido</label>
+          </div>
         </div>
-        <div class="field-error" id="e-parte_valiosa">Selecione uma ou várias opções.</div>
+        <div class="field-error" id="e-vende">Selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label for="produto">O que você vende ou pretende vender? Seja o mais específico possível. <span>*</span></label>
+        <textarea id="produto" placeholder="Descreva seu produto ou serviço com detalhes..."></textarea>
+        <div class="field-error" id="e-produto">Descreva o que você vende ou pretende vender.</div>
+      </div>
+
+      <div class="field">
+        <label for="cliente">Para quem você quer vender? Descreva seu cliente ideal. <span>*</span></label>
+        <textarea id="cliente" placeholder="Ex: mulheres acima de 40 anos com dor nas costas, profissionais de saúde que querem atender online..."></textarea>
+        <div class="field-error" id="e-cliente">Descreva seu cliente ideal.</div>
+      </div>
+
+      <div class="field">
+        <label>Qual é o preço médio do seu produto ou serviço? <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="preco" id="pr1" value="Até R$100" /><label for="pr1">Até R$100</label></div>
+          <div class="chip"><input type="radio" name="preco" id="pr2" value="R$100 a R$300" /><label for="pr2">R$100 a R$300</label></div>
+          <div class="chip"><input type="radio" name="preco" id="pr3" value="R$300 a R$1.000" /><label for="pr3">R$300 a R$1.000</label></div>
+          <div class="chip"><input type="radio" name="preco" id="pr4" value="Acima de R$1.000" /><label for="pr4">Acima de R$1.000</label></div>
+          <div class="chip"><input type="radio" name="preco" id="pr5" value="Ainda não defini" /><label for="pr5">Ainda não defini</label></div>
+        </div>
+        <div class="field-error" id="e-preco">Selecione uma faixa de preço.</div>
       </div>
 
       <div class="btn-row">
@@ -614,22 +646,79 @@
       </div>
     </div>
 
-    <!-- STEP 3: Feedback aberto -->
+    <!-- STEP 3: Instagram -->
     <div class="step-card" id="step3">
-      <div class="step-label">Perguntas 3 e 4 de 5</div>
-      <div class="step-title">Sua visão honesta</div>
-      <div class="step-desc">Essas respostas são o coração do nosso processo de melhoria.</div>
+      <div class="step-label">Parte 3 de 4</div>
+      <div class="step-title">Sua presença no Instagram hoje</div>
+      <div class="step-desc">Nos conte como está sua situação atual no Instagram.</div>
 
       <div class="field">
-        <label>O que você mudaria ou sente que faltou em nossa aula? <span>*</span></label>
-        <textarea id="mudaria" placeholder="Pode ser direto: ritmo da aula, profundidade, exemplos, o que faltou abordar..."></textarea>
-        <div class="field-error" id="e-mudaria">Compartilhe o que você mudaria ou o que faltou.</div>
+        <label>Você tem um perfil no Instagram para o seu negócio? <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="perfil" id="pf1" value="Sim, perfil de loja ou empresa" /><label for="pf1">Sim, perfil de loja ou empresa</label></div>
+          <div class="chip"><input type="radio" name="perfil" id="pf2" value="Sim, perfil pessoal/profissional" /><label for="pf2">Sim, perfil pessoal/profissional</label></div>
+          <div class="chip"><input type="radio" name="perfil" id="pf3" value="Não tenho ainda" /><label for="pf3">Não tenho ainda</label></div>
+        </div>
+        <div class="field-error" id="e-perfil">Selecione uma opção.</div>
       </div>
 
       <div class="field">
-        <label>O que você vai testar primeiro após a aula? <span>*</span></label>
-        <textarea id="testar" placeholder="Ex: vou criar meu calendário de conteúdo, vou montar minha identidade visual com IA, vou testar o NotebookLM..."></textarea>
-        <div class="field-error" id="e-testar">Conta o que você vai testar primeiro.</div>
+        <label>Quantos seguidores você tem hoje? <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="seguidores" id="sg1" value="Menos de 500" /><label for="sg1">Menos de 500</label></div>
+          <div class="chip"><input type="radio" name="seguidores" id="sg2" value="500 a 2 mil" /><label for="sg2">500 a 2 mil</label></div>
+          <div class="chip"><input type="radio" name="seguidores" id="sg3" value="2 mil a 10 mil" /><label for="sg3">2 mil a 10 mil</label></div>
+          <div class="chip"><input type="radio" name="seguidores" id="sg4" value="10 mil a 30 mil" /><label for="sg4">10 mil a 30 mil</label></div>
+          <div class="chip"><input type="radio" name="seguidores" id="sg5" value="30 mil a 100 mil" /><label for="sg5">30 mil a 100 mil</label></div>
+          <div class="chip"><input type="radio" name="seguidores" id="sg6" value="Mais de 100 mil" /><label for="sg6">Mais de 100 mil</label></div>
+        </div>
+        <div class="field-error" id="e-seguidores">Selecione uma faixa de seguidores.</div>
+      </div>
+
+      <div class="field">
+        <label>Com que frequência você posta no Instagram? <span>*</span></label>
+        <div class="chip-group">
+          <div class="chip"><input type="radio" name="frequencia" id="fq1" value="Todo dia" /><label for="fq1">Todo dia</label></div>
+          <div class="chip"><input type="radio" name="frequencia" id="fq2" value="Algumas vezes por semana" /><label for="fq2">Algumas vezes por semana</label></div>
+          <div class="chip"><input type="radio" name="frequencia" id="fq3" value="Uma vez por semana ou menos" /><label for="fq3">Uma vez por semana ou menos</label></div>
+          <div class="chip"><input type="radio" name="frequencia" id="fq4" value="Raramente ou nunca" /><label for="fq4">Raramente ou nunca</label></div>
+        </div>
+        <div class="field-error" id="e-frequencia">Selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label>Você já investiu dinheiro em anúncios no Instagram ou Facebook? <span>*</span></label>
+        <div class="feeling-group">
+          <div class="feeling-chip">
+            <input type="radio" name="anuncios" id="an1" value="Nunca investi" onchange="checkAnuncios()" />
+            <label for="an1">Nunca investi</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="anuncios" id="an2" value="Já impulsionei no Instagram" onchange="checkAnuncios()" />
+            <label for="an2">Já impulsionei no Instagram</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="anuncios" id="an3" value="Já rodei tráfego mas não tive bom resultado" onchange="checkAnuncios()" />
+            <label for="an3">Já rodei tráfego mas não tive bom resultado</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="anuncios" id="an4" value="Invisto mas não tenho tanto resultado" onchange="checkAnuncios()" />
+            <label for="an4">Invisto mas não tenho tanto resultado</label>
+          </div>
+          <div class="feeling-chip">
+            <input type="radio" name="anuncios" id="an5" value="Invisto e já faturo muito com anúncios" onchange="checkAnuncios()" />
+            <label for="an5">Invisto e já faturo muito com anúncios</label>
+          </div>
+        </div>
+        <div class="field-error" id="e-anuncios">Selecione uma opção.</div>
+
+        <div class="conditional-field" id="gestao-trafego">
+          <div class="field-label">Como você gerencia seu tráfego?</div>
+          <div class="chip-group">
+            <div class="chip"><input type="radio" name="gestao" id="gt1" value="Tenho agência/gestor de tráfego" /><label for="gt1">Tenho agência / gestor de tráfego</label></div>
+            <div class="chip"><input type="radio" name="gestao" id="gt2" value="Faço tráfego sozinho" /><label for="gt2">Faço tráfego sozinho</label></div>
+          </div>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -638,63 +727,61 @@
       </div>
     </div>
 
-    <!-- STEP 4: NPS -->
+    <!-- STEP 4: Dores e expectativas -->
     <div class="step-card" id="step4">
-      <div class="step-label">Pergunta 5 de 5</div>
-      <div class="step-title">De 1 a 10, qual a chance de você indicar essa aula para alguém?</div>
-      <div class="step-desc">1 = definitivamente não indicaria · 10 = indicaria sem hesitar.</div>
+      <div class="step-label">Parte 4 de 4</div>
+      <div class="step-title">Suas dores e expectativas</div>
+      <div class="step-desc">Essas respostas são o coração do que vamos preparar para você.</div>
 
       <div class="field">
-        <div class="nps-wrap">
-          <div class="nps-items">
-            <div class="nps-item"><input type="radio" name="nps" id="nps1" value="1"><label for="nps1">1</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps2" value="2"><label for="nps2">2</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps3" value="3"><label for="nps3">3</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps4" value="4"><label for="nps4">4</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps5" value="5"><label for="nps5">5</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps6" value="6"><label for="nps6">6</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps7" value="7"><label for="nps7">7</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps8" value="8"><label for="nps8">8</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps9" value="9"><label for="nps9">9</label></div>
-            <div class="nps-item"><input type="radio" name="nps" id="nps10" value="10"><label for="nps10">10</label></div>
-          </div>
-          <div class="nps-labels">
-            <span>Não indicaria</span>
-            <span>Indicaria com certeza</span>
-          </div>
+        <label>Qual é o seu maior desafio hoje com o Instagram? <span>*</span><br><small style="font-weight:400;color:var(--muted);">Pode marcar mais de uma opção.</small></label>
+        <div class="chip-group" style="margin-top:6px">
+          <div class="chip"><input type="checkbox" name="desafio" id="ds1" value="Crescimento de seguidores" /><label for="ds1">Crescimento de seguidores</label></div>
+          <div class="chip"><input type="checkbox" name="desafio" id="ds2" value="Gerar mais vendas" /><label for="ds2">Gerar mais vendas</label></div>
+          <div class="chip"><input type="checkbox" name="desafio" id="ds3" value="Aumentar o engajamento do perfil" /><label for="ds3">Aumentar o engajamento do perfil</label></div>
         </div>
-        <div class="field-error" id="e-nps">Selecione uma nota de 1 a 10.</div>
+        <div class="field-error" id="e-desafio">Selecione ao menos um desafio.</div>
+      </div>
+
+      <div class="field">
+        <label for="impede">O que te impede de crescer no Instagram hoje? Pode ser honesto. <span>*</span></label>
+        <textarea id="impede" placeholder="Conte o que está travando seu crescimento hoje..."></textarea>
+        <div class="field-error" id="e-impede">Compartilhe o que te impede de crescer.</div>
+      </div>
+
+      <div class="field">
+        <label for="expectativa">O que você quer sair sabendo fazer ao final da Aula de Tráfego Pago? <span>*</span></label>
+        <textarea id="expectativa" placeholder="Ex: quero saber criar anúncios, quero entender como segmentar meu público, quero saber quanto investir..."></textarea>
+        <div class="field-error" id="e-expectativa">Conte o que você espera aprender.</div>
       </div>
 
       <div class="btn-row">
         <button class="btn btn-ghost" onclick="goTo(3)"><span class="btn-icon">←</span> Voltar</button>
         <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">
-          Enviar avaliação <span class="btn-icon">✦</span>
+          Confirmar inscrição <span class="btn-icon">✦</span>
         </button>
       </div>
     </div>
 
     <!-- SUCCESS -->
     <div class="success-screen" id="successScreen">
-      <div class="success-icon">🙏</div>
-      <h2>Obrigado pelo seu feedback!</h2>
+      <div class="success-icon">🎯</div>
+      <h2>Inscrição confirmada!</h2>
       <p>
-        <strong>Sua resposta chegou.</strong> Cada avaliação é lida com atenção e usada diretamente para melhorar o próximo conteúdo.<br><br>
-        Acompanhe os próximos materiais e aulas pelo <strong>grupo do WhatsApp</strong>. Tem muito mais vindo por aí.
+        <strong>Nos vemos dia 07 de junho, às 9h, ao vivo.</strong><br><br>
+        Fique de olho no seu WhatsApp — enviaremos o link de acesso por lá.<br><br>
+        Obrigado por dedicar esse tempo. Vamos preparar uma aula feita sob medida para você.
       </p>
     </div>
 
     <div class="footer">
-      S-LAB — Laboratório de Desenvolvimento Profissional em Saúde ✦ IA na Prática
+      S-LAB — Laboratório de Desenvolvimento Profissional em Saúde ✦ Tráfego Pago para Captação e Vendas
     </div>
 
   </div>
 
   <script>
-    // ── Config ──────────────────────────────────────────────────────────────
-    // Após publicar o novo Apps Script, cole a URL do Web App aqui:
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdJTsZOX3yRpbrkY6iFu_StyHckq48yJrg1M1PJSqCo3jUUuwF4Fg2VZzh_MCaNbiJ/exec';
-    // ────────────────────────────────────────────────────────────────────────
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLl4yOchV3efWfurjnok74EDdfvkHN0WEYxnXVcHG88PHTuAroR-81Gd47P4bNdsqd/exec';
 
     let currentStep = 1;
     const totalSteps = 4;
@@ -749,27 +836,52 @@
     }
 
     const notEmpty = el => el.value.trim().length > 0;
+    const validEmail = el => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
 
     function validateStep(n) {
-      if (n === 1) return valRadio('sentimento');
+      if (n === 1) {
+        const a = val('nome', notEmpty);
+        const b = val('whatsapp', notEmpty);
+        const c = val('email', validEmail);
+        const d = valRadio('idade');
+        const e = valRadio('sexo');
+        const f = val('profissao', notEmpty);
+        return a && b && c && d && e && f;
+      }
       if (n === 2) {
-        const err = document.getElementById('e-parte_valiosa');
-        const ok  = getChecked('parte_valiosa').length > 0;
-        if (err) err.classList.toggle('show', !ok);
-        return ok;
+        const a = valRadio('vende');
+        const b = val('produto', notEmpty);
+        const c = val('cliente', notEmpty);
+        const d = valRadio('preco');
+        return a && b && c && d;
       }
       if (n === 3) {
-        const a = val('mudaria', notEmpty);
-        const b = val('testar',  notEmpty);
-        return a && b;
+        const a = valRadio('perfil');
+        const b = valRadio('seguidores');
+        const c = valRadio('frequencia');
+        const d = valRadio('anuncios');
+        return a && b && c && d;
       }
-      if (n === 4) return valRadio('nps');
+      if (n === 4) {
+        const err = document.getElementById('e-desafio');
+        const ok  = getChecked('desafio').length > 0;
+        if (err) err.classList.toggle('show', !ok);
+        const b = val('impede', notEmpty);
+        const c = val('expectativa', notEmpty);
+        return ok && b && c;
+      }
       return true;
     }
 
     function goTo(n) {
       if (n > currentStep && !validateStep(currentStep)) return;
       showStep(n);
+    }
+
+    function checkAnuncios() {
+      const val = document.querySelector('input[name="anuncios"]:checked')?.value || '';
+      const showConditional = val === 'Invisto mas não tenho tanto resultado' || val === 'Invisto e já faturo muito com anúncios';
+      document.getElementById('gestao-trafego').classList.toggle('show', showConditional);
     }
 
     async function submitForm() {
@@ -785,12 +897,25 @@
       };
 
       const payload = {
-        timestamp:     new Date().toLocaleString('pt-BR'),
-        sentimento:    getRadio('sentimento'),
-        parte_valiosa: getChecked('parte_valiosa').join(', '),
-        mudaria:       document.getElementById('mudaria').value.trim(),
-        testar:        document.getElementById('testar').value.trim(),
-        nps:           getRadio('nps'),
+        timestamp:    new Date().toLocaleString('pt-BR'),
+        nome:         document.getElementById('nome').value.trim(),
+        whatsapp:     document.getElementById('whatsapp').value.trim(),
+        email:        document.getElementById('email').value.trim(),
+        idade:        getRadio('idade'),
+        sexo:         getRadio('sexo'),
+        profissao:    document.getElementById('profissao').value.trim(),
+        vende:        getRadio('vende'),
+        produto:      document.getElementById('produto').value.trim(),
+        cliente:      document.getElementById('cliente').value.trim(),
+        preco:        getRadio('preco'),
+        perfil:       getRadio('perfil'),
+        seguidores:   getRadio('seguidores'),
+        frequencia:   getRadio('frequencia'),
+        anuncios:     getRadio('anuncios'),
+        gestao:       getRadio('gestao'),
+        desafio:      getChecked('desafio').join(', '),
+        impede:       document.getElementById('impede').value.trim(),
+        expectativa:  document.getElementById('expectativa').value.trim(),
       };
 
       try {
@@ -805,7 +930,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         btn.disabled = false;
-        btn.innerHTML = 'Enviar avaliação <span class="btn-icon">✦</span>';
+        btn.innerHTML = 'Confirmar inscrição <span class="btn-icon">✦</span>';
         alert('Ops! Algo deu errado. Tente novamente.');
       }
     }
